@@ -1,0 +1,7 @@
+{application, eredis, [
+    {description, "Ferryman"},
+    {vsn, "1.0.0"},
+    {modules, [ferryman_server]},
+    {registered, []},
+    {applications, [kernel, stdlib]}
+]}.
