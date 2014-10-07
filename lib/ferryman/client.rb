@@ -1,8 +1,11 @@
+require 'timeout'
+
 module Ferryman
   class Client
-    def initialize(redis, channel)
+    def initialize(redis, channel, timeout = 1)
       @redis = redis
       @channel = channel
+      @timeout = timeout
     end
 
     def cast(method, *arguments)
@@ -19,7 +22,8 @@ module Ferryman
       message = JsonRpcObjects::V20::Request.create(method, arguments, id: key).to_json
       servers_count = @redis.publish(@channel, message)
       servers_count.to_i.times.map do
-        raw_response = @redis.blpop(key).last
+        _key, raw_response = @redis.blpop(key, timeout: @timeout)
+        raise Timeout::Error if raw_response.nil?
         response = JsonRpcObjects::Response.parse(raw_response)
         response.result || raise(Ferryman::Error.new(response.error))
       end
