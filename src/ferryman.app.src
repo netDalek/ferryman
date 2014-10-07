@@ -1,4 +1,4 @@
-{application, eredis, [
+{application, ferryman, [
     {description, "Ferryman"},
     {vsn, "1.0.0"},
     {modules, [ferryman_server]},
