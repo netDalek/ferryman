@@ -21,6 +21,7 @@ describe "ferryman" do
     sleep(0.1)
 
     expect(client.call(:sum, 1, 2)).to eql(3)
+    expect(client.multicall(:sum, 1, 2)).to eql([3])
     expect{ client.call(:raise) }.to raise_error(Ferryman::Error)
     t.kill
   end

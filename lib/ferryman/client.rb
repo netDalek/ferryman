@@ -11,12 +11,18 @@ module Ferryman
     end
 
     def call(method, *arguments)
+      multicall(method, *arguments).first
+    end
+
+    def multicall(method, *arguments)
       key = random_key
       message = JsonRpcObjects::V20::Request.create(method, arguments, id: key).to_json
-      @redis.publish(@channel, message)
-      raw_response = @redis.blpop(key).last
-      response = JsonRpcObjects::Response.parse(raw_response)
-      response.result || raise(Ferryman::Error.new(response.error))
+      servers_count = @redis.publish(@channel, message)
+      servers_count.to_i.times.map do
+        raw_response = @redis.blpop(key).last
+        response = JsonRpcObjects::Response.parse(raw_response)
+        response.result || raise(Ferryman::Error.new(response.error))
+      end
     end
 
     private

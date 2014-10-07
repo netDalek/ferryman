@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jsonrpc (0.0.1)
+    ferryman (0.0.1)
       json-rpc-objects
       redis
 
@@ -49,7 +49,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.3)
-  jsonrpc!
+  ferryman!
   pry
   rake
   rspec
