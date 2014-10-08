@@ -1,29 +1,26 @@
 -module(ferryman_server).
 
 -export([
-         start_link/5,
-         stop/0
+         start_link/5
         ]).
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 -record(st, {
-    sub = undefined,
+    sub,
     client,
     handler
 }).
 
 start_link(Host, Port, Db, Channels, Handler) ->
-  gen_server:start_link({local, ?MODULE}, ?MODULE, [Host, Port, Db, Channels, Handler], []).
-
-stop() ->
-    gen_server:call(?MODULE, stop).
+  gen_server:start_link(?MODULE, [Host, Port, Db, Channels, Handler], []).
 
 %% ===================================================================
 %% GEN SERVER
 %% ===================================================================
 
 init([Host, Port, Db, Channels, Handler]) ->
+  error_logger:info_msg("start ferryman_server on redis on ~s:~w[~w] channels ~p", [Host, Port, Db, Channels]),
   {ok, Sub} = eredis_sub:start_link(Host, Port, ""),
   {ok, Client} = eredis:start_link(Host, Port, Db),
   eredis_sub:controlling_process(Sub),
@@ -39,11 +36,15 @@ handle_call(_Msg, _From, St) ->
     {stop, error, St}.
 
 handle_info({message, _Channel, Message, _Pid}, St) ->
+  error_logger:info_msg("ferryman_server receive message ~s", [Message]),
   case jsonrpc2:handle(Message, St#st.handler, fun jiffy:decode/1, fun jiffy:encode/1) of
-    noreply -> nop;
+    noreply ->
+      error_logger:info_msg("ferryman_server don't reply for cast message ~s", [Message]),
+      nop;
     {reply, Msg} ->
       {MsgAttrs} = jiffy:decode(Msg),
       Id = proplists:get_value(<<"id">>, MsgAttrs),
+      error_logger:info_msg("ferryman_server reply for message ~s", [Id]),
       eredis:q(St#st.client, ["RPUSH", Id, Msg]),
       eredis:q(St#st.client, ["DEL", Id])
   end,
