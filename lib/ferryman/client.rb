@@ -8,6 +8,10 @@ module Ferryman
       @timeout = timeout
     end
 
+    def servers_count
+      @redis.client.call([:pubsub, :numsub, @channel]).last.to_i
+    end
+
     def cast(method, *arguments)
       message = JsonRpcObjects::V20::Request.create(method, arguments).to_json
       @redis.publish(@channel, message)
