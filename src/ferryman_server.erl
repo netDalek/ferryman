@@ -35,8 +35,12 @@ handle_cast(_Msg, St) ->
     {stop, error, St}.
 
 handle_call({put_reply, Id, Msg}, _From, St) ->
-    eredis:q(St#st.client, ["RPUSH", Id, Msg]),
-    eredis:q(St#st.client, ["DEL", Id]),
+    eredis:qp(St#st.client, [
+      ["MULTI"],
+      ["RPUSH", Id, Msg],
+      ["EXPIRE", Id, 60],
+      ["EXEC"]
+    ]),
     {reply, ok, St};
 handle_call(stop, _From, St) ->
     {stop, normal, shutdown_ok, St};
@@ -71,7 +75,5 @@ handle_request(ParentPid, Message, Handler) ->
       Id = proplists:get_value(<<"id">>, MsgAttrs),
       error_logger:info_msg("ferryman_server reply for message ~s", [Id]),
       put_reply(ParentPid, Id, Msg)
-      % eredis:q(St#st.client, ["RPUSH", Id, Msg]),
-      % eredis:q(St#st.client, ["DEL", Id])
   end.
 
