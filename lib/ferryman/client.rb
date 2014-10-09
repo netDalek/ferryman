@@ -27,7 +27,7 @@ module Ferryman
       servers_count = @redis.publish(@channel, message)
       servers_count.to_i.times.map do
         _key, raw_response = @redis.blpop(key, timeout: @timeout)
-        raise Timeout::Error if raw_response.nil?
+        raise Timeout::Error, "timeout for method #{method} with arguments #{arguments}" if raw_response.nil?
         response = JsonRpcObjects::Response.parse(raw_response)
         response.result || raise(Ferryman::Error.new(response.error))
       end
