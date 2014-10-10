@@ -20,8 +20,10 @@ module Ferryman
     def process(message, obj)
       response = @handler.handle(message, obj)
       if response.id
-        @response_redis.rpush(response.id, response.to_json)
-        @response_redis.del(response.id)
+        @response_redis.multi do
+          @response_redis.rpush(response.id, response.to_json)
+          @response_redis.expire(response.id, 60)
+        end
       end
     end
 

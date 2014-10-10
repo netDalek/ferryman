@@ -13,7 +13,7 @@ module Ferryman
     rescue MultiJson::ParseError => e
       error = JsonRpcObjects::V20::Error.create(-32700, e)
       JsonRpcObjects::V20::Response.create(nil, error, id: request.id)
-    rescue RuntimeError => e
+    rescue StandardError => e
       error = JsonRpcObjects::V20::Error.create(-32700, e)
       JsonRpcObjects::V20::Response.create(nil, error, id: request.id)
     end
