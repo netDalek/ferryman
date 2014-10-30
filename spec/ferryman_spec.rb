@@ -19,9 +19,14 @@ describe "ferryman" do
     client = Ferryman::Client.new(Redis.new, "dd", 1)
     server = Ferryman::Server.new(Redis.new, "dd")
     t = Thread.start(server) do |server|
-      server.receive(TTT.new)
+      begin
+        server.receive(TTT.new)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
+      end
     end
-    sleep(0.1)
+    sleep(10)
 
     expect(client.call(:sum, 1, 2)).to eql(3)
     expect(client.multicall(:sum, 1, 2)).to eql([3])
