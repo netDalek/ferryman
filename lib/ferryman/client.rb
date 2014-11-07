@@ -2,6 +2,8 @@ require 'timeout'
 
 module Ferryman
   class Client
+    class NoSubscriptions < RuntimeError; end
+
     def initialize(redis, channel, timeout = 1)
       @redis = redis
       @channel = channel
@@ -18,7 +20,9 @@ module Ferryman
     end
 
     def call(method, *arguments)
-      multicall(method, *arguments).first
+      multicall(method, *arguments).tap do |responses|
+        raise NoSubscriptions if responses.empty?
+      end.first
     end
 
     def multicall(method, *arguments)
