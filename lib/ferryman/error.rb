@@ -5,11 +5,7 @@ module Ferryman
     end
 
     def message
-      @error.message
-    end
-
-    def backtrace
-      @error.data
+      "#{@error.message} #{@error.data.inspect}"
     end
   end
 end
