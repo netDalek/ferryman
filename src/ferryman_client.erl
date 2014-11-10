@@ -34,8 +34,13 @@ get_value(Redis, Id, Timeout) ->
   {ok, [_Key, Value]} = eredis:q(Redis, ["BLPOP", Id, Timeout]),
   {Response} = jiffy:decode(Value),
   case proplists:get_value(<<"result">>, Response) of
-    undefined -> {error, proplists:get_value(<<"error">>, Response)};
-    Result -> {ok, Result}
+      undefined ->
+        {Error} = proplists:get_value(<<"error">>, Response),
+        ErrorCode = proplists:get_value(<<"code">>, Error),
+        ErrorMessage = proplists:get_value(<<"message">>, Error),
+        {error, ErrorCode, ErrorMessage};
+      Result ->
+        {ok, Result}
   end.
 
 random_key() ->
