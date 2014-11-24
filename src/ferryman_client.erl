@@ -28,7 +28,7 @@ multicall(Redis, Channel, Method, Params, Timeout) ->
   Req = jsonrpc2_client:create_request({Method, Params, Id}),
   JsonReq = jiffy:encode(Req),
   {ok, ServersCount} = eredis:q(Redis, ["PUBLISH", Channel, JsonReq]),
-  [get_value(Redis, Id, Timeout) || _ <- lists:seq(1, binary_to_integer(ServersCount))].
+  [get_value(Redis, Id, Timeout) || _ <- lists:seq(1, list_to_integer(binary_to_list(ServersCount)))].
 
 get_value(Redis, Id, Timeout) ->
   {ok, [_Key, Value]} = eredis:q(Redis, ["BLPOP", Id, Timeout]),
