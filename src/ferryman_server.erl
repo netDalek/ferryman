@@ -10,7 +10,8 @@
 -record(st, {
     sub,
     client,
-    handler
+    handler,
+    channels
 }).
 
 start_link(Host, Port, Db, Channels, Handler) ->
@@ -29,7 +30,7 @@ init([Host, Port, Db, Channels, Handler]) ->
   {ok, Client} = eredis:start_link(Host, Port, Db),
   eredis_sub:controlling_process(Sub),
   eredis_sub:subscribe(Sub, [list_to_binary(C) || C <- Channels]),
-  {ok, #st{sub=Sub, client=Client, handler=Handler}}.
+  {ok, #st{sub=Sub, client=Client, handler=Handler, channels = Channels}}.
 
 handle_cast(_Msg, St) ->
     {stop, error, St}.
@@ -52,6 +53,9 @@ handle_info({message, _Channel, Message, _Pid}, St) ->
   Self = self(),
   spawn_link(fun() -> handle_request(Self, Message, St#st.handler) end),
   eredis_sub:ack_message(St#st.sub),
+  {noreply, St};
+handle_info({eredis_connected, _Pid}, #st{sub = Sub, channels = Channels} = St) ->
+  eredis_sub:subscribe(Sub, [list_to_binary(C) || C <- Channels]),
   {noreply, St};
 handle_info(_Info, #st{sub = Sub} = St) ->
   eredis_sub:ack_message(Sub),
