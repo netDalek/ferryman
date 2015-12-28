@@ -19,18 +19,19 @@ module Ferryman
       @redis.publish(@channel, message)
     end
 
-    def call(method, *arguments)
-      multicall(method, *arguments).tap do |responses|
+    def call(method, *arguments, timeout: nil)
+      multicall(method, *arguments, timeout: timeout).tap do |responses|
         raise NoSubscriptions if responses.empty?
       end.first
     end
 
-    def multicall(method, *arguments)
+    def multicall(method, *arguments, timeout: nil)
       key = random_key
       message = JsonRpcObjects::V20::Request.create(method, arguments, id: key).to_json
       servers_count = @redis.publish(@channel, message)
       servers_count.to_i.times.map do
-        _key, raw_response = @redis.blpop(key, timeout: @timeout)
+        _key, raw_response = @redis.blpop(key, timeout: timeout || @timeout)
+
         raise Timeout::Error, "timeout for method #{method} with arguments #{arguments}" if raw_response.nil?
         response = JsonRpcObjects::Response.parse(raw_response)
         response.result || raise(Ferryman::Error.new(response.error))
