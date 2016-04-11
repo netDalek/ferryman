@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/netDalek/json-rpc-objects.git
-  revision: 6ff3067c48caca06c0cea85e6094b3455b595f98
+  revision: 87b3aae6fe1c1f3c756bc92f68307203bda4b4d6
   specs:
     json-rpc-objects (0.4.3)
       abstract (>= 1.0.0)
@@ -25,7 +25,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
-    addressable (2.3.6)
+    addressable (2.4.0)
     coderay (1.1.0)
     diff-lcs (1.2.5)
     i18n (0.6.11)
@@ -34,7 +34,7 @@ GEM
       multi_json
     method_source (0.8.2)
     minitest (5.4.2)
-    multi_json (1.10.1)
+    multi_json (1.11.2)
     pry (0.9.12.6)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -68,3 +68,6 @@ DEPENDENCIES
   pry
   rake
   rspec
+
+BUNDLED WITH
+   1.11.2
