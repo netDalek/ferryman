@@ -7,6 +7,7 @@ require "ferryman/client"
 require "ferryman/server"
 require "ferryman/error"
 require "ferryman/handler"
+require "ferryman/async_call"
 
 module Ferryman
   class ExitError < RuntimeError; end

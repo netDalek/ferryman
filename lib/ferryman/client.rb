@@ -25,22 +25,15 @@ module Ferryman
       end.first
     end
 
-    def multicall(method, *arguments, timeout: nil)
+    def async_call(method, *arguments)
       key = random_key
       message = JsonRpcObjects::V20::Request.create(method, arguments, id: key).to_json
       servers_count = @redis.publish(@channel, message)
-      time_left = timeout || @timeout
-      servers_count.to_i.times.map do
-        time_before = Time.now
-        _key, raw_response = @redis.blpop(key, timeout: time_left.ceil)
-        time_after = Time.now
-        time_left = time_left - (time_after - time_before)
-        time_left = 0 if time_left < 0
+      Ferryman::AsyncCall.new(@redis, @timeout, method, key, servers_count)
+    end
 
-        raise Timeout::Error, "timeout for method #{method} with arguments #{arguments}" if raw_response.nil?
-        response = JsonRpcObjects::Response.parse(raw_response)
-        response.result || raise(Ferryman::Error.new(response.error))
-      end
+    def multicall(method, *arguments, timeout: nil)
+      async_call(method, *arguments).results
     end
 
     private
