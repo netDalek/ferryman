@@ -12,6 +12,14 @@ module Ferryman
       @error.data
     end
 
+    def inspect
+      "#<#{self.class}: #{message}>"
+    end
+
+    def to_s
+      message
+    end
+
     def backtrace
       if super().is_a?(Array) && @error.data.is_a?(Array) && @error.data.all?{|e| e.is_a?(String)}
         @error.data + super()
