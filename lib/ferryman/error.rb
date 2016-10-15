@@ -1,11 +1,31 @@
 module Ferryman
+  class TimeoutError < Timeout::Error
+    def initialize(rpc_message, timeout)
+      @rpc_message = rpc_message
+      @timeout = timeout
+    end
+
+    def message
+      "#{@rpc_message} failed with timeout '#{@timeout}'"
+    end
+
+    def inspect
+      "#<#{self.class}: #{message}>"
+    end
+
+    def to_s
+      message
+    end
+  end
+
   class Error < RuntimeError
-    def initialize(json_rpc_error)
+    def initialize(rpc, json_rpc_error)
+      @rpc = rpc.to_s
       @error = json_rpc_error
     end
 
     def message
-      @error.message
+      "#{@rpc} failed with error '#{@error.message}'"
     end
 
     def data

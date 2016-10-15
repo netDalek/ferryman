@@ -4,3 +4,4 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'json-rpc-objects', github: "netDalek/json-rpc-objects"
+gem 'hashie'
