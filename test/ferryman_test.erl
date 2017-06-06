@@ -12,3 +12,8 @@ rpc_test() ->
   {ok, R1} = ferryman_client:call(Redis, "a2p", test, []),
   ?assertEqual(<<"ok">>, R1),
   {error, -32601, <<"Method not found.">>} = ferryman_client:call(Redis, "a2p", dd, []).
+
+rpc_no_subscriber_test() ->
+  {ok, Redis} = eredis:start_link(),
+  {error, R1} = ferryman_client:call(Redis, "ch1", test, []),
+  ?assertEqual(no_subscriber, R1).
