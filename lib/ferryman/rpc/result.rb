@@ -2,6 +2,7 @@ module Ferryman
   module Rpc
     class Result
       attr_reader :message, :redis, :key, :default_timeout, :results_count, :order
+      delegate :channel, to: :message
 
       def initialize(message, redis, key, default_timeout, results_count, order = nil)
         @message = message
