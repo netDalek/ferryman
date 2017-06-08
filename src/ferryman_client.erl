@@ -17,8 +17,10 @@ call(Redis, Channel, Method, Params) ->
   call(Redis, Channel, Method, Params, 1).
 
 call(Redis, Channel, Method, Params, Timeout) ->
-  [H | _] = multicall(Redis, Channel, Method, Params, Timeout),
-  H.
+    case multicall(Redis, Channel, Method, Params, Timeout) of
+        [H | _] -> H;
+        [] -> {error, no_subscriber}
+    end.
 
 multicall(Redis, Channel, Method, Params) ->
   multicall(Redis, Channel, Method, Params, 1).
