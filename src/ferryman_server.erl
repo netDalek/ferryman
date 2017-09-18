@@ -39,7 +39,7 @@ handle_call({put_reply, Id, Msg}, _From, St) ->
     eredis:qp(St#st.client, [
       ["MULTI"],
       ["RPUSH", Id, Msg],
-      ["EXPIRE", Id, 60],
+      ["EXPIRE", Id, 600],
       ["EXEC"]
     ]),
     {reply, ok, St};
