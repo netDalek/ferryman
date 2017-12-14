@@ -8,3 +8,5 @@ ebin
 deps
 *.swp
 .eunit
+_build
+erl_crash.dump
