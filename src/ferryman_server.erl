@@ -77,7 +77,7 @@ handle_request(ParentPid, Message, Handler) ->
     {reply, Msg} ->
       {MsgAttrs} = jiffy:decode(Msg),
       Id = proplists:get_value(<<"id">>, MsgAttrs),
-      error_logger:info_msg("ferryman_server reply for message ~s", [Id]),
+      error_logger:info_msg("ferryman_server reply for message ~ts, with id: ~s", [Msg, Id]),
       put_reply(ParentPid, Id, Msg)
   end.
 
