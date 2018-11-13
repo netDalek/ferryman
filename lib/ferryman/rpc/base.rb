@@ -12,7 +12,7 @@ module Ferryman
       end
 
       def to_s
-        "RPC to #{redis.client.id} channel #{channel} method #{method} with arguments #{arguments}"
+        "RPC to #{redis.id} channel #{channel} method #{method} with arguments #{arguments}"
       end
 
       def publish

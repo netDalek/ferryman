@@ -31,7 +31,7 @@ describe "ferryman" do
     expect(client.call(:sum, 1, 2).publish.result).to eql(3)
     expect(client.cast(:sum, 1, 2).publish).to eql(1)
     expect(client.call(:sum, 1, 2).publish.results).to eql([3])
-    message = "RPC to redis://127.0.0.1:6379/0 channel dd method raise with arguments [] failed with error 'undefined method `no_method' for 1:Fixnum'"
+    message = "RPC to redis://127.0.0.1:6379/0 channel dd method raise with arguments [] failed with error 'undefined method `no_method' for 1:Integer'"
     expect{ client.call(:raise).publish.result }.to raise_error(Ferryman::Error, message)
     exception = begin
                   client.call(:raise).publish.result
@@ -60,7 +60,7 @@ describe "ferryman" do
     expect(client.call(:sum, 1, 2).push.result).to eql(3)
     expect(client.cast(:sum, 1, 2).push).to eql(1)
     expect(client.call(:sum, 1, 2).push.results).to eql([3])
-    message = "RPC to redis://127.0.0.1:6379/0 channel dd method raise with arguments [] failed with error 'undefined method `no_method' for 1:Fixnum'"
+    message = "RPC to redis://127.0.0.1:6379/0 channel dd method raise with arguments [] failed with error 'undefined method `no_method' for 1:Integer'"
     expect{ client.call(:raise).push.result }.to raise_error(Ferryman::Error, message)
     exception = begin
                   client.call(:raise).push.result
