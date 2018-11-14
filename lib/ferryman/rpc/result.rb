@@ -1,5 +1,3 @@
-require 'active_support/core_ext/module'
-
 module Ferryman
   module Rpc
     class Result
